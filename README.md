@@ -6,7 +6,7 @@ Just a simple script that runs on a Raspberry Pi that allows an email to go out 
 
 * python
 * pip
-* mandrill: `pip install mandrill`
+* [sparkpost](https://github.com/SparkPost/python-sparkpost): `pip install sparkpost`
 * requests: `pip install requests`
 
 These are the instructions to run the program continually on a Raspberry Pi.

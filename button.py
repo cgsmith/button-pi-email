@@ -6,7 +6,7 @@ import requests
 import time
 
 # All of the configuration should be done within here
-apikey =  'your-api-key' #mandrill api key
+apikey =  'your-api-key' #api key
 fromemail = 'from@email.com' #from address
 tomailbox = ['to@email.com'] #email for sending mailbox open alert
 toannounce = ['announce@email.com'] #announcement email of external IP
@@ -19,21 +19,14 @@ startup = "Hello,<br><br>The controller (" + fqn + ") powered on just now.  Is t
 #---------------------------------------
 # No modifications necessary below here
 
-print 'Powering controller on...'
+print('Powering controller on...')
 
 trigger = int(time.time()) # Time used to see how long it has been since last button press
 
 try:
-  mandrill_client = mandrill.Mandrill(apikey)
   sparky = SparkPost(apikey) # Connect up to SparkPost
 
-  #send off the external IP for SSH in the future 
-  message = {
-  'from_email': fromemail,
-  'to': [{'email':toannounce,'type':'to'}],
-  'subject': subjectname + ' Controller Power On',
-  'html': startup }
-
+  # send off the external IP for SSH in the future 
   # Have sparky issue a message that the controller just powered on
   response = sparky.transmissions.send(
      recipients=toannounce,
@@ -41,16 +34,14 @@ try:
      from_email=fromemail,
      subject=subjectname + ' Controller Power On')
 
-  result = mandrill_client.messages.send(message=message, async=False, ip_pool='Main Pool')
-
 except SparkPostException, e:
-  print 'A mailing error occurred: %s - %s' %  (e.__class__, e)
+  print('A mailing error occurred: %s - %s' %  (e.__class__, e))
   raise
 
 # Setup the GPIO mode and PIN for 16
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-print 'GPIO set for 16'
+print('GPIO set for 16')
 
 # Loop for a button press and try sending a message when the button is pressed
 try:
@@ -58,14 +49,14 @@ try:
     while True:
         time.sleep(0.05) # Maintain a safe distance from button presses
         if (GPIO.input(16) == 1): # it is pushed - just print it
-            print 'Button pressed time is :'
-            print trigger
-            print time.time()
+            print('Button pressed time is :')
+            print(trigger)
+            print(time.time())
         if ((GPIO.input(16) == 1) & ((trigger + 3) < (int(time.time())))):
             trigger = int(time.time())
             try:
-              print 'Time was less then trigger'
-	          print 'Attempting to send email'
+              print('Time was less then trigger')
+              print('Attempting to send email')
               sparky = SparkPost(apikey) # Connect up to SparkPost
 
               # Send off mailbox opened message
@@ -77,7 +68,7 @@ try:
 
               print 'Email was sent'
             except SparkPostException, e:
-              print 'A mailing error occurred: %s - %s' %  (e.__class__, e)
+              print('A mailing error occurred: %s - %s' %  (e.__class__, e))
               raise
 
 except KeyboardInterrupt:

@@ -31,7 +31,7 @@ try:
         from_email=fromAddress,
         subject=subject + ' Controller Power On')
 
-except SparkPostException, e:
+except e:
     print('A mailing error occurred: %s - %s' % (e.__class__, e))
     raise
 
@@ -64,7 +64,7 @@ try:
                     subject=subject)
 
                 print 'Email was sent'
-            except SparkPostException, e:
+            except e:
                 print('A mailing error occurred: %s - %s' % (e.__class__, e))
                 raise
 

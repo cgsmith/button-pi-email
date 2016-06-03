@@ -42,7 +42,7 @@ print('GPIO set for 16')
 
 # Loop for a button press and try sending a message when the button is pressed
 try:
-    print 'Trying to enter loop to check for button press'
+    print('Trying to enter loop to check for button press')
     while True:
         time.sleep(0.05)  # Maintain a safe distance from button presses
         if GPIO.input(16) == 1:  # it is pushed - just print it

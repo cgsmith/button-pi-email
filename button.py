@@ -5,35 +5,31 @@ import os
 import requests
 import time
 
-# All of the configuration should be done within here
-apikey = 'your-api-key'  # api key
-fromemail = 'from@email.com'  # from address
-tomailbox = ['to@email.com']  # email for sending mailbox open alert
-toannounce = ['announce@email.com']  # announcement email of external IP
-subjectname = '[Subject in the email]'
-buttonmsg = 'Hello,<br><br>The mailbox button was pressed'
+# All of your config should be in your ENV variables
+fromAddress = os.environ.get('BTNPI_FROM_ADDRESS', None)
+toAddress = os.environ.get('BTNPI_TO_ADDRESS', None)
+toAnnounce = os.environ.get('BTNPI_TO_ANNOUNCE', None)
+subject = os.environ.get('BTNPI_SUBJECT', None)
+buttonMessage = os.environ.get('BTNPI_MESSAGE', None)
 fqn = os.uname()[1]
 r = requests.get('http://wtfismyip.com/json')
-startup = "Hello,<br><br>The controller (" + fqn + ") powered on just now.  Is this happening often? Here is the external IP for SSH access: " + \
-          r.json()['YourFuckingIPAddress']  # THATS THE NAME! I swear
-
-# ---------------------------------------
-# No modifications necessary below here
+startup = "Hello,<br><br>The controller (" + fqn + ") powered on just now.  Is this happening often? Here is the " \
+          "external IP for SSH access: " + r.json()['YourFuckingIPAddress']  # THATS THE NAME! I swear
 
 print('Powering controller on...')
 
 trigger = int(time.time())  # Time used to see how long it has been since last button press
 
 try:
-    sparky = SparkPost(apikey)  # Connect up to SparkPost
+    # Connect up to SparkPost
+    sparky = SparkPost()
 
-    # send off the external IP for SSH in the future
-    # Have sparky issue a message that the controller just powered on
+    # Send off the external IP for SSH in the future
     response = sparky.transmissions.send(
-        recipients=toannounce,
+        recipients=toAnnounce,
         html=startup,
-        from_email=fromemail,
-        subject=subjectname + ' Controller Power On')
+        from_email=fromAddress,
+        subject=subject + ' Controller Power On')
 
 except SparkPostException, e:
     print('A mailing error occurred: %s - %s' % (e.__class__, e))
@@ -58,14 +54,14 @@ try:
             try:
                 print('Time was less then trigger')
                 print('Attempting to send email')
-                sparky = SparkPost(apikey) # Connect up to SparkPost
+                sparky = SparkPost() # Connect up to SparkPost
 
                 # Send off mailbox opened message
                 response = sparky.transmissions.send(
-                    recipients=tomailbox,
-                    html=buttonmsg,
-                    from_email=fromemail,
-                    subject=subjectname)
+                    recipients=[toAddress],
+                    html=buttonMessage,
+                    from_email=fromAddress,
+                    subject=subject)
 
                 print 'Email was sent'
             except SparkPostException, e:

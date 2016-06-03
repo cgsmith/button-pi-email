@@ -31,7 +31,7 @@ try:
         from_email=fromAddress,
         subject=subject + ' Controller Power On')
 
-except e:
+except Exception as e:
     print('A mailing error occurred: %s - %s' % (e.__class__, e))
     raise
 
@@ -63,8 +63,8 @@ try:
                     from_email=fromAddress,
                     subject=subject)
 
-                print 'Email was sent'
-            except e:
+                print('Email was sent')
+            except Exception as e:
                 print('A mailing error occurred: %s - %s' % (e.__class__, e))
                 raise
 

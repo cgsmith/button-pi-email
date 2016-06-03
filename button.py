@@ -26,7 +26,7 @@ try:
 
     # Send off the external IP for SSH in the future
     response = sparky.transmissions.send(
-        recipients=toAnnounce,
+        recipients=[toAnnounce],
         html=startup,
         from_email=fromAddress,
         subject=subject + ' Controller Power On')
